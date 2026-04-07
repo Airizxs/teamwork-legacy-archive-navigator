@@ -161,6 +161,7 @@ const App: React.FC = () => {
   const [detailPanel, setDetailPanel] = React.useState<DetailPanel>('timeline');
   const [selectedUpdateId, setSelectedUpdateId] = React.useState<string | null>(null);
   const [selectedMessageId, setSelectedMessageId] = React.useState<number | null>(null);
+  const [expandedTaskId, setExpandedTaskId] = React.useState<number | null>(null);
   const [attachmentNotice, setAttachmentNotice] = React.useState<string | null>(null);
   const attachmentNoticeTimeoutRef = React.useRef<number | null>(null);
 
@@ -317,6 +318,7 @@ const App: React.FC = () => {
     setDetailPanel('timeline');
     setSelectedUpdateId(null);
     setSelectedMessageId(null);
+    setExpandedTaskId(null);
 
     try {
       const [projectRes, tasksRes, messagesRes, milestonesRes] = await Promise.all([
@@ -970,7 +972,7 @@ const App: React.FC = () => {
                       <div className="flex items-center justify-between gap-4">
                         <div>
                           <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-stone-500">Task Register</p>
-                      <h3 className="mt-2 font-serif text-2xl text-stone-900 md:text-3xl">Recorded work items</h3>
+                          <h3 className="mt-2 font-serif text-2xl text-stone-900 md:text-3xl">Recorded work items</h3>
                         </div>
                         <span className="text-sm text-stone-500">{projectTasks.length} task{projectTasks.length === 1 ? '' : 's'}</span>
                       </div>
@@ -979,22 +981,57 @@ const App: React.FC = () => {
                         <div className="mt-8 space-y-4">
                           {projectTasks.map((task) => (
                             <div key={task.id} className="rounded-[1.5rem] border border-stone-300 bg-[#fffdf8] p-5">
-                              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                                <div>
-                                  <h4 className="break-words text-base font-semibold text-stone-900 md:text-lg">{task.content || 'Untitled task'}</h4>
-                                  <p className="mt-2 break-words whitespace-pre-line text-sm leading-7 text-stone-600">{normalizeArchiveText(task.description) || 'No task description was captured in the archive.'}</p>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                  <span className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${getStatusTone(task.status)}`}>
-                                    {task.status || 'unknown'}
-                                  </span>
-                                  <span className={`inline-flex items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${getPriorityTone(task.priority)}`}>
-                                    <ArrowUpIcon className="h-3 w-3" />
-                                    {task.priority || 'normal'}
-                                  </span>
-                                </div>
-                              </div>
+                              {(() => {
+                                const isExpanded = expandedTaskId === task.id;
+                                const descriptionPreview =
+                                  normalizeArchiveText(task.description) || 'No task description was captured in the archive.';
+                                const contentId = `task-detail-${task.id}`;
 
+                                return (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => setExpandedTaskId((prev) => (prev === task.id ? null : task.id))}
+                                      aria-expanded={isExpanded}
+                                      aria-controls={contentId}
+                                      className="group w-full text-left"
+                                    >
+                                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                                        <div className="min-w-0">
+                                          <h4 className="break-words text-base font-semibold text-stone-900 md:text-lg">{task.content || 'Untitled task'}</h4>
+                                          {!isExpanded && (
+                                            <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-stone-600">{descriptionPreview}</p>
+                                          )}
+                                        </div>
+                                        <div className="flex shrink-0 flex-wrap items-center gap-2">
+                                          <span className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${getStatusTone(task.status)}`}>
+                                            {task.status || 'unknown'}
+                                          </span>
+                                          <span className={`inline-flex items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${getPriorityTone(task.priority)}`}>
+                                            <ArrowUpIcon className="h-3 w-3" />
+                                            {task.priority || 'normal'}
+                                          </span>
+                                          <span className="inline-flex items-center gap-1 rounded-full border border-stone-300 bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-600">
+                                            <ChevronRightIcon className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                            {isExpanded ? 'Collapse' : 'Expand'}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </button>
+
+                                    <div
+                                      id={contentId}
+                                      className={`grid transition-all duration-300 ease-out ${isExpanded ? 'mt-4 grid-rows-[1fr] opacity-100' : 'mt-0 grid-rows-[0fr] opacity-0'}`}
+                                    >
+                                      <div className="overflow-hidden">
+                                        <p className="break-words whitespace-pre-line text-sm leading-7 text-stone-600">
+                                          {descriptionPreview}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </>
+                                );
+                              })()}
                               <div className="mt-4 grid gap-3 text-xs uppercase tracking-[0.16em] text-stone-500 md:grid-cols-2">
                                 <div className="rounded-2xl border border-stone-300/80 bg-white px-4 py-3">
                                   Created: {formatDisplayDate(task.createdOn)}
