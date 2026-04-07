@@ -1,0 +1,46 @@
+:root {
+  color-scheme: light;
+}
+
+html {
+  background:
+    radial-gradient(circle at top, rgba(180, 151, 90, 0.18), transparent 28%),
+    linear-gradient(180deg, #f7f2e7 0%, #efe7d8 100%);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: #1c1917;
+  background: transparent;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+.font-serif {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.archive-shell {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.36) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(87, 83, 78, 0.35);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(231, 224, 212, 0.6);
+}
