@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "package:share": "bash scripts/package-share.sh"
+    "package:share": "bash scripts/package-share.sh",
+    "cf:dump-d1": "bash scripts/export-d1-sql.sh",
+    "cf:dev": "npx wrangler dev",
+    "cf:deploy": "npm run build && npx wrangler deploy"
   },
   "dependencies": {
     "@google/genai": "^1.38.0",

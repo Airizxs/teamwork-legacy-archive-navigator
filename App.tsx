@@ -20,7 +20,7 @@ import {
 import { getProjectSummary } from './services/geminiService';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = (import.meta.env.VITE_API_BASE || '/api').replace(/\/$/, '');
 const ATTACHMENT_HOST = import.meta.env.VITE_ATTACHMENT_HOST || 'https://uploads.teamwork.com/';
 
 type ViewMode = 'dashboard' | 'projects' | 'project-detail';
